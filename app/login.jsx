@@ -8,251 +8,219 @@ import {
   TextInput, 
   TouchableOpacity, 
   KeyboardAvoidingView, 
-  Platform, 
-  ScrollView 
+  Platform,
+  ScrollView
 } from 'react-native';
-import { useRouter } from 'expo-router';
-import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter, useLocalSearchParams } from 'expo-router';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 
-const Login = () => {
+export default function LoginScreen() {
   const router = useRouter();
-  // input values
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  // password visibility toggle
-  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const { role } = useLocalSearchParams();
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleLogin = () => {
+    // change this to actual authentication logic later
+    if (role === 'driver') {
+      router.replace('/dashboard_driver'); // replace to prevent going back to login
+    } else {
+      router.replace('/dashboard_passenger');
+    }
+  };
 
   return (
-    // keybord visibility handling for both iOS and Android
-    <KeyboardAvoidingView 
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={styles.container}
+    <ImageBackground 
+      source={require('../assets/erp/bg.png')} 
+      style={styles.fullBackground}
+      resizeMode="cover"
     >
-      <ScrollView contentContainerStyle={styles.scrollContainer} bounces={false}>
-        
-        {/* bg */}
-        <ImageBackground 
-          source={require('../assets/erp/bg.png')} 
-          style={styles.topSection}
-        >
-          <View style={styles.topOverlay}>
-            <View style={styles.headerBar}>
-              {/* back btn */}
-              <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-                <Ionicons name="arrow-back" size={28} color="white" />
-              </TouchableOpacity>
-              
-              {/* logo */}
-              <View style={styles.logoBox}>
-                <Image 
-                  source={require('../assets/erp/erp_logo.jpg')} 
-                  style={styles.logoImage} 
+      <KeyboardAvoidingView 
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
+        style={styles.container}
+      >
+        <SafeAreaView style={{ flex: 1 }}>
+          <ScrollView 
+            contentContainerStyle={{ flexGrow: 1 }} 
+            bounces={false}
+            keyboardShouldPersistTaps="handled"
+          >
+            <View style={styles.topSection}>
+              <View style={styles.header}>
+                <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+                  <Ionicons name="arrow-back" size={28} color="white" />
+                </TouchableOpacity>
+                
+                <View style={styles.logoBox}>
+                  <Image source={require('../assets/erp/erp_long_logo.png')} style={styles.logoImage} />
+                </View>
+              </View>
+            </View>
+
+            <View style={styles.bottomSection}>
+              <Text style={styles.titleText}>Sign in to your Account</Text>
+              <Text style={styles.subTitleText}>Enter your email and password to log in</Text>
+
+              {/* email */}
+              <View style={styles.inputLabelContainer}>
+                <Text style={styles.labelText}>Email or Mobile Number</Text>
+              </View>
+              <View style={styles.inputWrapper}>
+                <View style={styles.iconBox}>
+                  <MaterialCommunityIcons name="email-outline" size={20} color="white" />
+                </View>
+                <TextInput 
+                  style={styles.input} 
+                  placeholder="Email or Mobile Number" 
+                  placeholderTextColor="#A9B9D1"
                 />
               </View>
-              <View style={{ width: 40 }} />
-            </View>
-          </View>
-        </ImageBackground>
 
-        <View style={styles.bottomSection}>
-          <Text style={styles.titleText}>Sign in to your Account</Text>
-          <Text style={styles.subTitleText}>Enter your email and password to log in</Text>
-
-          {/* email */}
-          <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>Email or Mobile Number</Text>
-            <View style={styles.inputContainer}>
-              <View style={styles.iconBox}>
-                <FontAwesome5 name="envelope" size={18} color="white" />
+              {/* pass */}
+              <View style={styles.inputLabelContainer}>
+                <Text style={styles.labelText}>Password</Text>
               </View>
-              {/* email or mobile number input */}
-              <TextInput 
-                style={styles.textInput} 
-                placeholder="Email or Mobile Number"
-                placeholderTextColor="#A9A9A9"
-                keyboardType="email-address"
-                autoCapitalize="none"
-                value={email}
-                onChangeText={setEmail}
-              />
-            </View>
-          </View>
-
-          {/* password input */}
-          <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>Password</Text>
-            <View style={styles.inputContainer}>
-              <View style={styles.iconBox}>
-                <FontAwesome5 name="lock" size={18} color="white" />
-              </View>
-              <TextInput 
-                style={styles.textInput} 
-                placeholder="Password"
-                placeholderTextColor="#A9A9A9"
-                secureTextEntry={!isPasswordVisible} 
-                value={password}
-                onChangeText={setPassword}
-              />
-              <TouchableOpacity 
-                onPress={() => setIsPasswordVisible(!isPasswordVisible)}
-                style={styles.eyeIcon}
-              >
-                <Ionicons 
-                  name={isPasswordVisible ? "eye-outline" : "eye-off-outline"} 
-                  size={20} 
-                  color="#A9A9A9" 
+              <View style={styles.inputWrapper}>
+                <View style={styles.iconBox}>
+                  <Ionicons name="key-outline" size={20} color="white" />
+                </View>
+                <TextInput 
+                  style={styles.input} 
+                  placeholder="Password" 
+                  placeholderTextColor="#A9B9D1" 
+                  secureTextEntry={!showPassword}
                 />
+                <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeIcon}>
+                  <Ionicons name={showPassword ? "eye-off-outline" : "eye-outline"} size={20} color="#A9B9D1" />
+                </TouchableOpacity>
+              </View>
+
+              <TouchableOpacity style={styles.forgotPassword}>
+                <Text style={styles.forgotText}>Forget Password?</Text>
+              </TouchableOpacity>
+
+              {/* login btn */}
+              <TouchableOpacity style={styles.loginButton} activeOpacity={0.8} onPress={handleLogin}>
+                <Text style={styles.loginButtonText}>Log in</Text>
               </TouchableOpacity>
             </View>
-          </View>
-
-          {/* forget password */}
-          <TouchableOpacity style={styles.forgotPasswordButton}>
-            <Text style={styles.forgotPasswordText}>Forget Password?</Text>
-          </TouchableOpacity>
-
-          {/* login btn */}
-          <TouchableOpacity style={styles.buttonPrimary} activeOpacity={0.8}>
-            <Text style={styles.buttonText}>Log in</Text>
-          </TouchableOpacity>
-
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+          </ScrollView>
+        </SafeAreaView>
+      </KeyboardAvoidingView>
+    </ImageBackground>
   );
-};
+}
 
-//styling for login screen
 const styles = StyleSheet.create({
-  container: {
+  fullBackground: {
     flex: 1,
-    backgroundColor: '#fff',
+    width: '100%',
+    height: '100%',
   },
-  scrollContainer: {
-    flexGrow: 1,
-  },
-  topSection: {
-    height: 180, 
-    justifyContent: 'flex-start',
-  },
-  topOverlay: {
+  container: { 
     flex: 1,
-    backgroundColor: 'rgba(0, 71, 171, 0.4)', 
-    paddingTop: 50, 
-    paddingHorizontal: 20,
   },
-  headerBar: {
+  topSection: { 
+    height: 200,
+    justifyContent: 'center',
+  },
+  header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    paddingHorizontal: 20,
   },
-  backButton: {
+  backButton: { 
+    marginRight: 20,
+    backgroundColor: 'rgba(0,0,0,0.1)', 
     padding: 5,
+    borderRadius: 20 
   },
   logoBox: {
-    width: 200,
-    height: 55, 
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    justifyContent: 'center',
+    backgroundColor: 'white',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 15,
+    flex: 1,
     alignItems: 'center',
-    elevation: 5,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
+    elevation: 4,
   },
-  logoImage: {
-    width: '90%',
-    height: '90%',
-    resizeMode: 'contain',
-  },
+  logoImage: { width: 150, height: 40, resizeMode: 'contain' },
   bottomSection: {
     flex: 1,
     backgroundColor: '#F8FBFF',
     borderTopLeftRadius: 50,
     borderTopRightRadius: 50,
-    paddingHorizontal: 30,
     paddingTop: 40,
-    marginTop: -40, 
+    paddingHorizontal: 30,
+    paddingBottom: 40, 
   },
   titleText: {
-    fontSize: 28, 
+    fontSize: 28,
     fontWeight: 'bold',
     color: '#033B8C',
-    lineHeight: 34,
-    marginBottom: 8,
+    marginBottom: 5,
   },
   subTitleText: {
     fontSize: 14,
-    color: '#333', 
-    lineHeight: 20,
-    marginBottom: 35,
+    color: '#444',
+    marginBottom: 25,
   },
-  inputGroup: {
-    marginBottom: 20,
+  inputLabelContainer: {
+    width: '100%',
+    marginBottom: 5,
   },
-  inputLabel: {
+  labelText: {
     fontSize: 12,
-    color: '#6B82A6',
+    color: '#0047AB',
     fontWeight: '600',
-    marginBottom: 6,
-    marginLeft: 5,
   },
-  inputContainer: {
+  inputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#D8E2F0',
+    borderColor: '#D1DCEB',
     borderRadius: 10,
-    backgroundColor: '#fff',
-    overflow: 'hidden', 
+    marginBottom: 15,
+    overflow: 'hidden',
+    backgroundColor: 'white',
   },
   iconBox: {
-    width: 45,
-    height: 48,
-    backgroundColor: '#0047AB', 
+    backgroundColor: '#0047AB',
+    padding: 12,
     justifyContent: 'center',
     alignItems: 'center',
+    width: 45,
   },
-  textInput: {
+  input: {
     flex: 1,
-    height: 48,
     paddingHorizontal: 15,
     fontSize: 15,
-    color: '#000',
+    color: '#333',
+    height: 45,
   },
   eyeIcon: {
-    padding: 10,
-    position: 'absolute', 
-    right: 0,
+    paddingHorizontal: 10,
   },
-  forgotPasswordButton: {
+  forgotPassword: {
     alignSelf: 'flex-end',
-    marginBottom: 30,
+    marginBottom: 25,
   },
-  forgotPasswordText: {
+  forgotText: {
     color: '#0047AB',
-    fontSize: 14,
     fontWeight: '600',
   },
-  buttonPrimary: {
+  loginButton: {
     backgroundColor: '#0047AB',
-    paddingVertical: 16,
-    borderRadius: 14,
-    alignItems: 'center',
     width: '100%',
-    elevation: 3, 
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
+    paddingVertical: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    elevation: 2,
   },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '700',
+  loginButtonText: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
 });
 
-export default Login;
