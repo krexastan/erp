@@ -78,7 +78,7 @@ const PassengerBookList = () => {
           >
             <Text style={styles.btnText}>Message</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={[styles.actionBtn, { backgroundColor: '#3DD36B' }]}>
+          <TouchableOpacity style={[styles.actionBtn, { backgroundColor: '#3DD36B' }]} onPress={() => router.push('/trip_driver')}>
             <Text style={styles.btnText}>Accept</Text>
           </TouchableOpacity>
           <TouchableOpacity 
@@ -92,7 +92,7 @@ const PassengerBookList = () => {
         {/* view map - clicked */}
         {isShowingMap && (
           <View style={styles.mapOverlay}>
-            <TouchableOpacity style={styles.viewMapBtn} onPress={() => console.log("Navigating to Map...")}>
+            <TouchableOpacity style={styles.viewMapBtn} onPress={() => router.push('/view_map_driver')}>
               <Text style={styles.viewMapText}>View Map</Text>
             </TouchableOpacity>
           </View>
@@ -111,7 +111,7 @@ const PassengerBookList = () => {
       </View>
 
       <View style={styles.contentContainer}>
-        {/* only show search if there's passenger */}
+        {/* search bar - only showing when there are passengers */}
         {passengers.length > 0 ? (
           <>
             <View style={styles.searchBar}>
